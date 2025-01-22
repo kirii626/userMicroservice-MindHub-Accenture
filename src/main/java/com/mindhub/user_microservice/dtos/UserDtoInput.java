@@ -1,25 +1,25 @@
 package com.mindhub.user_microservice.dtos;
 
-import com.mindhub.user_microservice.models.UserEntity;
-import com.mindhub.user_microservice.models.enums.RolType;
+import jakarta.validation.constraints.NotBlank;
 
 public class UserDtoInput {
 
-    private Long id;
-
+    @NotBlank(message = "The username can't be null")
     private String username;
 
+    @NotBlank(message = "The email can't be null")
     private String email;
 
-    private RolType rolType;
+    @NotBlank(message = "The password can't be null")
+    private String password;
 
     public UserDtoInput() {
     }
 
-    public UserDtoInput(String username, String email, RolType rolType) {
+    public UserDtoInput(String username, String email, String password) {
         this.username = username;
         this.email = email;
-        this.rolType = rolType;
+        this.password = password;
     }
 
     public String getUsername() {
@@ -30,7 +30,7 @@ public class UserDtoInput {
         return email;
     }
 
-    public RolType getRolType() {
-        return rolType;
+    public String getPassword() {
+        return password;
     }
 }

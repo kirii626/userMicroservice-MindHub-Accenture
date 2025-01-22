@@ -1,20 +1,27 @@
 package com.mindhub.user_microservice.dtos;
 
 import com.mindhub.user_microservice.models.UserEntity;
-import com.mindhub.user_microservice.models.enums.RolType;
+import com.mindhub.user_microservice.models.enums.RoleType;
 
 public class UserDtoOutput {
+
+    private Long id;
 
     private String username;
 
     private String email;
 
-    private RolType rolType;
+    private RoleType roleType;
 
-    public UserDtoOutput(UserEntity userEntity) {
-        username = userEntity.getUsername();
-        email = userEntity.getEmail();
-        rolType = userEntity.getRolType();
+    public UserDtoOutput(Long id, String username, String email, RoleType roleType) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.roleType = roleType;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getUsername() {
@@ -25,7 +32,7 @@ public class UserDtoOutput {
         return email;
     }
 
-    public RolType getRolType() {
-        return rolType;
+    public RoleType getRoleType() {
+        return roleType;
     }
 }

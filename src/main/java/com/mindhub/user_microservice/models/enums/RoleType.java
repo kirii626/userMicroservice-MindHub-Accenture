@@ -1,6 +1,6 @@
 package com.mindhub.user_microservice.models.enums;
 
-public enum RolType {
+public enum RoleType {
     ADMIN,
     USER
 }

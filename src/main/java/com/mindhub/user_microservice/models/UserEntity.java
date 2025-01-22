@@ -1,10 +1,7 @@
 package com.mindhub.user_microservice.models;
 
-import com.mindhub.user_microservice.models.enums.RolType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.mindhub.user_microservice.models.enums.RoleType;
+import jakarta.persistence.*;
 
 @Entity
 public class UserEntity {
@@ -13,22 +10,27 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String username;
 
+    @Column(nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String password;
 
-    private RolType rolType;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private RoleType roleType = RoleType.USER;
 
     public UserEntity() {
     }
 
-    public UserEntity(String username, String email, String password, RolType rolType) {
+    public UserEntity(String username, String email, String password, RoleType roleType) {
         this.username = username;
         this.email = email;
         this.password = password;
-        this.rolType = rolType;
+        this.roleType = roleType;
     }
 
     public Long getId() {
@@ -59,12 +61,12 @@ public class UserEntity {
         this.password = password;
     }
 
-    public RolType getRolType() {
-        return rolType;
+    public RoleType getRoleType() {
+        return roleType;
     }
 
-    public void setRolType(RolType rolType) {
-        this.rolType = rolType;
+    public void setRoleType(RoleType roleType) {
+        this.roleType = roleType;
     }
 
     @Override
@@ -73,7 +75,7 @@ public class UserEntity {
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
-                ", rolType=" + rolType +
+                ", roleType=" + roleType +
                 '}';
     }
 }
