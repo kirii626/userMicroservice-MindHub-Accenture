@@ -7,13 +7,16 @@ import com.mindhub.user_microservice.models.UserEntity;
 import com.mindhub.user_microservice.repositories.UserRepository;
 import com.mindhub.user_microservice.services.UserService;
 import com.mindhub.user_microservice.services.mappers.UserMapper;
+import com.mindhub.user_microservice.services.validations.ValidUserFields;
 import com.mindhub.user_microservice.utils.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -24,6 +27,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private ValidUserFields validUserFields;
+
     @Override
     public List<UserDtoOutput> findAllUsers() {
         return userMapper.toDtoList(userRepository.findAll());
@@ -31,6 +37,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<ApiResponse<UserDtoOutput>> createUser(UserDtoInput userDtoInput) {
+        validUserFields.validateEmailUniqueness(userDtoInput.getEmail());
+
         UserEntity userEntity = userMapper.toEntity(userDtoInput);
         UserEntity savedUser = userRepository.save(userEntity);
         UserDtoOutput userDtoOutput = userMapper.toDto(savedUser);
@@ -44,9 +52,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<ApiResponse<UserDtoOutput>> updateUser(Long userId, UserDtoInput userDtoInput) {
-        if (userId == null || userId <= 0) {
-            throw new IllegalArgumentException("Invalid user ID: " + userId);
-        }
+        validUserFields.validateUserId(userId);
 
         UserEntity existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundExc("User not found by ID: " + userId));
@@ -65,6 +71,12 @@ public class UserServiceImpl implements UserService {
         );
 
         return ResponseEntity.ok(response);
+    }
+
+    @Override
+    public Long findUserIdByEmail(String email) {
+        return userRepository.findUserIdByEmail(email)
+                .orElseThrow(() -> new UserNotFoundExc("User not found for email: " + email));
     }
 
 

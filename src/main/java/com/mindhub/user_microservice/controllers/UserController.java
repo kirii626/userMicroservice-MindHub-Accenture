@@ -2,17 +2,19 @@ package com.mindhub.user_microservice.controllers;
 
 import com.mindhub.user_microservice.dtos.UserDtoInput;
 import com.mindhub.user_microservice.dtos.UserDtoOutput;
+import com.mindhub.user_microservice.exceptions.UserNotFoundExc;
 import com.mindhub.user_microservice.services.UserService;
 import com.mindhub.user_microservice.utils.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 public class UserController {
 
     @Autowired
@@ -32,5 +34,11 @@ public class UserController {
     private ResponseEntity<ApiResponse<UserDtoOutput>> updateUser(@Valid @PathVariable Long userId,
                                                                   @RequestBody UserDtoInput userDtoInput) {
         return userService.updateUser(userId, userDtoInput);
+    }
+
+    @GetMapping("/by-email")
+    public ResponseEntity<Long> getUserIdByEmail(@RequestParam String email) {
+        Long userId = userService.findUserIdByEmail(email);
+        return ResponseEntity.ok(userId);
     }
 }

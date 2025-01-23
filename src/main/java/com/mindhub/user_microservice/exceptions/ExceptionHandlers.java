@@ -1,5 +1,6 @@
 package com.mindhub.user_microservice.exceptions;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -70,6 +71,12 @@ public class ExceptionHandlers {
             return buildErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
         }
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred: " + ex.getMessage());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        String errorMessage = "A user with the provided email already exists.";
+        return buildErrorResponse(HttpStatus.CONFLICT, errorMessage);
     }
 
 }

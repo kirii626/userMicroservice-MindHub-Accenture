@@ -6,6 +6,7 @@ import com.mindhub.user_microservice.utils.ApiResponse;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
 
@@ -14,4 +15,6 @@ public interface UserService {
     ResponseEntity<ApiResponse<UserDtoOutput>> createUser(UserDtoInput userDtoInput);
 
     ResponseEntity<ApiResponse<UserDtoOutput>> updateUser(Long userId, UserDtoInput userDtoInput);
+
+    Long findUserIdByEmail(String email);
 }
