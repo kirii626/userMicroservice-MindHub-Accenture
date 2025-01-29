@@ -1,6 +1,7 @@
 package com.mindhub.user_microservice.services.validations;
 
 import com.mindhub.user_microservice.exceptions.UserAlreadyExistsExc;
+import com.mindhub.user_microservice.exceptions.UserNotFoundExc;
 import com.mindhub.user_microservice.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,11 @@ public class ValidUserFields {
     public void validateUserId(Long userId) {
         if (userId == null || userId <= 0) {
             throw new IllegalArgumentException("Invalid user ID: " + userId);
+        }
+
+        boolean exists = userRepository.existsById(userId);
+        if (!exists) {
+            throw new UserNotFoundExc("User with ID " + userId + " not found");
         }
     }
 

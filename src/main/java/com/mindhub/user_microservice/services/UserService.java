@@ -17,4 +17,6 @@ public interface UserService {
     ResponseEntity<ApiResponse<UserDtoOutput>> updateUser(Long userId, UserDtoInput userDtoInput);
 
     Long findUserIdByEmail(String email);
+
+    ResponseEntity<String> findEmailByUserId(Long userId);
 }

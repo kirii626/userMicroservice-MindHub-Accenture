@@ -4,6 +4,7 @@ import com.mindhub.user_microservice.dtos.UserDtoInput;
 import com.mindhub.user_microservice.dtos.UserDtoOutput;
 import com.mindhub.user_microservice.exceptions.UserNotFoundExc;
 import com.mindhub.user_microservice.models.UserEntity;
+import com.mindhub.user_microservice.publishers.UserRegisteredPublisher;
 import com.mindhub.user_microservice.repositories.UserRepository;
 import com.mindhub.user_microservice.services.UserService;
 import com.mindhub.user_microservice.services.mappers.UserMapper;
@@ -20,6 +21,9 @@ import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
+
+    @Autowired
+    private UserRegisteredPublisher userRegisteredPublisher;
 
     @Autowired
     private UserRepository userRepository;
@@ -43,6 +47,9 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userMapper.toEntity(userDtoInput);
         UserEntity savedUser = userRepository.save(userEntity);
         UserDtoOutput userDtoOutput = userMapper.toDto(savedUser);
+
+        userRegisteredPublisher.sendUserRegisteredEvent(userDtoOutput);
+
         ApiResponse<UserDtoOutput> response = new ApiResponse<>(
                 "User created successfully",
                 userDtoOutput
@@ -79,6 +86,13 @@ public class UserServiceImpl implements UserService {
     public Long findUserIdByEmail(String email) {
         return userRepository.findUserIdByEmail(email)
                 .orElseThrow(() -> new UserNotFoundExc("User not found for email: " + email));
+    }
+
+    @Override
+    public ResponseEntity<String> findEmailByUserId(Long userId) {
+            validUserFields.validateUserId(userId);
+            String email = userRepository.findEmailById(userId);
+            return ResponseEntity.ok(email);
     }
 
 
