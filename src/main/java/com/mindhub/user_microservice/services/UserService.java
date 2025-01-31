@@ -19,4 +19,8 @@ public interface UserService {
     Long findUserIdByEmail(String email);
 
     ResponseEntity<String> findEmailByUserId(Long userId);
+
+    UserDtoOutput getUserProfile(String username);
+
+    List<UserDtoOutput> getAllUsers(String role);
 }

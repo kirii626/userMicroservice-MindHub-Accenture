@@ -1,49 +1,25 @@
 package com.mindhub.user_microservice.controllers;
 
-import com.mindhub.user_microservice.dtos.UserDtoInput;
 import com.mindhub.user_microservice.dtos.UserDtoOutput;
-import com.mindhub.user_microservice.exceptions.UserNotFoundExc;
 import com.mindhub.user_microservice.services.UserService;
-import com.mindhub.user_microservice.utils.ApiResponse;
-import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/user")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-    @GetMapping("/all")
-    public List<UserDtoOutput> getAllUsers() {
-        return userService.findAllUsers();
+    @GetMapping("/me")
+    public ResponseEntity<UserDtoOutput> getUserProfile(HttpServletRequest request) {
+        String username = request.getHeader("X-Username");
+        return ResponseEntity.ok(userService.getUserProfile(username));
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<ApiResponse<UserDtoOutput>> createUser(@Valid @RequestBody UserDtoInput userDtoInput) {
-        return userService.createUser(userDtoInput);
-    }
-
-    @PutMapping("/{userId}")
-    private ResponseEntity<ApiResponse<UserDtoOutput>> updateUser(@Valid @PathVariable Long userId,
-                                                                  @RequestBody UserDtoInput userDtoInput) {
-        return userService.updateUser(userId, userDtoInput);
-    }
-
-    @GetMapping("/by-email")
-    public ResponseEntity<Long> getUserIdByEmail(@RequestParam String email) {
-        Long userId = userService.findUserIdByEmail(email);
-        return ResponseEntity.ok(userId);
-    }
-
-    @GetMapping("/{userId}/email")
-    public ResponseEntity<String> getUserEmail(@PathVariable Long userId) {
-        return userService.findEmailByUserId(userId);
-    }
 }

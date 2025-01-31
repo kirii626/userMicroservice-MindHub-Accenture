@@ -13,6 +13,7 @@ import com.mindhub.user_microservice.utils.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +35,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ValidUserFields validUserFields;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public List<UserDtoOutput> findAllUsers() {
         return userMapper.toDtoList(userRepository.findAll());
@@ -45,6 +49,9 @@ public class UserServiceImpl implements UserService {
         validUserFields.validateEmailUniqueness(userDtoInput.getEmail());
 
         UserEntity userEntity = userMapper.toEntity(userDtoInput);
+
+        userEntity.setPassword(passwordEncoder.encode(userDtoInput.getPassword()));
+
         UserEntity savedUser = userRepository.save(userEntity);
         UserDtoOutput userDtoOutput = userMapper.toDto(savedUser);
 
@@ -94,6 +101,19 @@ public class UserServiceImpl implements UserService {
             String email = userRepository.findEmailById(userId);
             return ResponseEntity.ok(email);
     }
+
+    @Override
+    public UserDtoOutput getUserProfile(String username) {
+        validUserFields.validateUsernameHeader(username);
+        UserEntity userEntity = validUserFields.validateUserExists(username);
+        return userMapper.toDto(userEntity);
+    }
+
+    @Override
+    public List<UserDtoOutput> getAllUsers(String role) {
+        validUserFields.validateAdminRole(role);
+        List<UserEntity> users = userRepository.findAll();
+        return userMapper.toDtoList(users);    }
 
 
 }
